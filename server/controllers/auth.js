@@ -48,9 +48,15 @@ const register = async (req, res, next) => {
       password: hashedPassword,
     });
     delete user.password;
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.SECRET_TOKEN_JWT,
+      { expiresIn: '4000000s' }
+    );
+
     return res.json({
       status: true,
-      user,
+      accessToken,
     });
   } catch (ex) {
     next(ex);

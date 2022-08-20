@@ -7,7 +7,7 @@ import { FormContainer } from '../styleComp/FormContainer';
 import { toastOption, validation } from '../utils/Validation';
 import axios from 'axios';
 import { registerRoute } from '../utils/apiRoutes';
-
+import Cookies from 'js-cookie';
 const Register = () => {
   const navigate = useNavigate();
   const [values, setValues] = useState({
@@ -29,9 +29,9 @@ const Register = () => {
           email: values.email,
           password: values.password,
         });
-        console.log(data);
+
         if (data) {
-          localStorage.setItem('user-data', JSON.stringify(data.user));
+          Cookies.set('Token', data.accessToken);
           navigate('/');
         }
       } catch (error) {

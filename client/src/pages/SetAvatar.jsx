@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { setAvatarRoute } from '../utils/apiRoutes';
 import { Container } from '../styleComp/Container';
+import Cookies from 'js-cookie';
+import { apiAuth } from '../api/api';
 
 export default function SetAvatar() {
   const api = `https://api.multiavatar.com/4645646`;
@@ -15,40 +17,41 @@ export default function SetAvatar() {
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+  const [currentUser, setCurrentUser] = useState(null);
   const toastOptions = {
-    position: 'bottom-right',
+    position: 'top-center',
     autoClose: 8000,
     pauseOnHover: true,
     draggable: true,
     theme: 'dark',
   };
+  const token = Cookies.get('Token');
 
-  //   useEffect(() => {
-  //     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
-  //       navigate('/login');
-  //   }, [navigate]);
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    const getCurrentUser = async () => {
+      const { data } = await apiAuth.get('/myAccount');
+      if (!data) {
+        navigate('/login');
+        return;
+      }
+      setCurrentUser(data.user);
+    };
+    getCurrentUser();
+  }, [navigate, token]);
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
       toast.error('Please select an avatar', toastOptions);
     } else {
-      const user = await JSON.parse(localStorage.getItem('user-data'));
-
-      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+      await axios.post(`${setAvatarRoute}/${currentUser._id}`, {
         image: avatars[selectedAvatar],
       });
-
-      if (data.isSet) {
-        user.isAvatarImageSet = true;
-        user.avatarImage = data.image;
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(user)
-        );
-        navigate('/');
-      } else {
-        toast.error('Error setting avatar. Please try again.', toastOptions);
-      }
+      toast.success('avatar Updated', toastOptions);
+      navigate('/');
     }
   };
 

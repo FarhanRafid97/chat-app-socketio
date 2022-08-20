@@ -8,6 +8,7 @@ export default function Contacts({ contacts, changeChat }) {
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
   console.log('contact saya', contacts);
+
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data } = await apiAuth.get('/myAccount');

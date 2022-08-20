@@ -46,10 +46,10 @@ const Chat = () => {
       if (currentUser) {
         if (currentUser.avatarImage) {
           const { data } = await apiAuth.get(`/allusers/${currentUser._id}`);
-
+          console.log('fetch contact', data);
           setContacts(data);
         } else {
-          // navigate('/set-avatar');
+          navigate('/set-avatar');
         }
       }
     };
